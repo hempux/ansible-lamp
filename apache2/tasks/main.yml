@@ -1,0 +1,40 @@
+---
+# tasks file for apache2
+    - name: install apache2
+      become: yes
+      become_user: root
+      apt:
+        pkg:
+          - apache2
+          - libapache2-mod-php
+        state: present
+
+
+    - name: Set permissions for www-folder
+      file:
+       path: /var/www
+       owner: www-data
+       group: www-data
+       mode: 0555
+
+
+    - name: Enable apache2 modules
+      block:
+        - apache2_module:
+            name: rewrite
+            state: present
+        - apache2_module:
+            name: ssl
+            state: present
+
+    - name: Copy apache2 config
+      copy:
+        src: apache2.conf
+        dest: /etc/apache2/apache2.conf
+
+
+    - name: Restart apache service.
+      systemd:
+       name: apache2
+       daemon_reload: yes
+       state: restarted

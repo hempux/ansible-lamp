@@ -1,0 +1,57 @@
+---
+# tasks file for vsftpd
+    - name: Install vsftpd
+      become: yes
+      become_user: root
+      ansible.builtin.apt:
+        pkg:
+          - vsftpd
+          - libpam-pwdfile
+        state: present
+
+
+    - name: "upload config file"
+      ansible.builtin.copy:
+       src: vsftpd.conf
+       dest: /etc/vsftpd.conf
+
+    - name: "copy over pam.d config"
+      ansible.builtin.copy:
+        src: pam-conf
+        dest: /etc/pam.d/vsftpd
+
+
+    - name: Add vsftpd service user account
+      ansible.builtin.user:
+        name: vsftpd
+        comment: vsftpd user
+        system: yes
+        create_home: no
+        group: nogroup
+        shell: /bin/false
+
+
+    - name: Create users config folder
+      ansible.builtin.file:
+        path: "/etc/vsftpd/"
+        state: directory
+
+    - name: Create users file
+      ansible.builtin.file:
+        path: "/etc/vsftpd/ftpd.passwd"
+        state: touch
+      register: userfile
+      changed_when: '"absent" in userfile.diff.before.state'
+
+    - name: Create FTP user config folder
+      ansible.builtin.file:
+        path: "/etc/vsftpd-users/"
+        state: directory
+
+
+
+    - name: Restart vsftpd service.
+      ansible.builtin.systemd:
+       name: vsftpd
+       daemon_reload: true
+       state: restarted

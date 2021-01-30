@@ -1,0 +1,9 @@
+---
+# tasks file for summary
+
+    - debug:
+        msg: 
+           - "FTP Username: {{ FTPUSER }}"
+           - "FTP Password: {{ ftppasswdd.stdout }}"
+           - "SQL Username: {{ SQLUSER }}"
+           - "SQL Password: {{ sqlpasswd.stdout }}"

@@ -1,0 +1,30 @@
+---
+# tasks file for apache2
+    - name: Install mysql
+      apt:
+        pkg:
+          - mysql-server
+        state: present
+  
+    - name: Install python-mysql
+      apt:
+       pkg:
+         - python3-pymysql
+       state: present
+
+
+    - name: Start mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: "upload mysql config"
+      copy: 
+        src: my.cnf 
+        dest: ~/.my.cnf
+
+    - name: "uload mysql conf"
+      copy: 
+        src: mysqld.cnf 
+        dest: /etc/mysql/mysql.conf.d/mysqld.cnf
